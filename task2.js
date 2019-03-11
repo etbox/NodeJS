@@ -2,30 +2,31 @@ const Koa = require('koa')
 
 const app = new Koa()
 
-// logger
-
-app.use(async (ctx, next) => {
-	// console.log('logger')
-	await next()
-	const rt = ctx.response.get('X-Response-Time')
-	console.log(`${ctx.method} ${ctx.url} - ${rt}`)
-})
-
-// x-response-time
-
-app.use(async (ctx, next) => {
-	// console.log('x-response-time')
-	const start = Date.now()
-	await next()
-	const ms = Date.now() - start
-	ctx.set('X-Response-Time', `${ms}ms`)
-})
-
-// response
+let num
 
 app.use(async (ctx) => {
-	// console.log('response')
 	ctx.body = 'Hello World'
+	if (ctx.url === '/start') {
+		ctx.body = 'OK'
+		num = Math.floor(Math.random() * 100)
+		// console.log(`start ${num}`)
+	} else if (ctx.url.search(/^\/\d{1,3}$/) !== -1) {
+		// ctx.body = 'num'
+		// console.log(`num ${num}`)
+		const guessNum = Number(ctx.url.slice(1))
+
+		if (typeof (num) !== 'undefined') {
+			if (guessNum < num) {
+				ctx.body = 'smaller'
+			} else if (guessNum > num) {
+				ctx.body = 'bigger'
+			} else {
+				ctx.body = 'equal'
+			}
+		} else {
+			ctx.body = 'please enter /start first'
+		}
+	}
 })
 
 app.listen(3000)
