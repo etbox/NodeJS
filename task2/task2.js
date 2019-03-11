@@ -1,32 +1,33 @@
 const Koa = require('koa')
+const Router = require('koa-router')
 
 const app = new Koa()
+const router = new Router()
 
 let num
 
-app.use(async (ctx) => {
+router.get('/', (ctx, next) => {
+	// ctx.router available
 	ctx.body = 'Hello World'
-	if (ctx.url === '/start') {
-		ctx.body = 'OK'
-		num = Math.floor(Math.random() * 100)
-		// console.log(`start ${num}`)
-	} else if (ctx.url.search(/^\/\d{1,3}$/) !== -1) {
-		// ctx.body = 'num'
-		// console.log(`num ${num}`)
-		const guessNum = Number(ctx.url.slice(1))
-
-		if (typeof (num) !== 'undefined') {
-			if (guessNum < num) {
-				ctx.body = 'smaller'
-			} else if (guessNum > num) {
-				ctx.body = 'bigger'
-			} else {
-				ctx.body = 'equal'
-			}
+}).get('/start', (ctx, next) => {
+	ctx.body = 'OK'
+	num = Math.floor(Math.random() * 100)
+	console.log(num)
+}).get('/:number', (ctx, next) => {
+	if (typeof (num) !== 'undefined') {
+		if (ctx.params.number < num) {
+			ctx.body = 'smaller'
+		} else if (ctx.params.number > num) {
+			ctx.body = 'bigger'
 		} else {
-			ctx.body = 'please enter /start first'
+			ctx.body = 'equal'
 		}
+	} else {
+		ctx.body = 'please enter /start first'
 	}
 })
 
-app.listen(3000)
+app
+	.use(router.routes())
+	.use(router.allowedMethods())
+	.listen(3000)
