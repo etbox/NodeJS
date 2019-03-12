@@ -5,6 +5,7 @@
     "eslint-plugin-import": "^2.16.0"
   },
   "dependencies": {
+    "commander": "^2.19.0",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "redis": "^2.8.0"
