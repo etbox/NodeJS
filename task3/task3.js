@@ -1,4 +1,5 @@
-#! /usr/bin/env node
+// #! /usr/bin/env node
+// 这句是直接运行task3而不是运行node时才需要的
 
 const Koa = require('koa')
 const Router = require('koa-router')
@@ -10,7 +11,7 @@ const program = require('commander')
 
 const app = new Koa()
 const router = new Router()
-const client = redis.createClient()
+const client = redis.createClient() // 连接redis
 const getAsync = promisify(client.get).bind(client) // 使用promise取得redis的数据
 
 client.on('connect', () => { // 提示已连接redis
@@ -60,17 +61,16 @@ if (!program.port) {
 	program.port = 3000
 }
 
+async function getNumber() { // 函数定义放外面，不要在函数里定义函数；async表明返回值为Promise
+	// console.log('async')
+	return getAsync('number')
+}
+
 app
 	.use(router.routes())
 	.use(router.allowedMethods())
 	.use(async (ctx) => { // 异步获取数据，并将数据保存在ctx中
-		async function getNumber() {
-			const serverNum = await getAsync('number')
-			ctx.serverNum = serverNum
-			// console.log('async')
-		}
-
-		await getNumber()
+		ctx.serverNum = await getNumber()
 		// console.log(`judge ${ctx === getCtx}`)
 	})
 	.listen(program.port)
