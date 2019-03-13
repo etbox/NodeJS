@@ -25,7 +25,7 @@ router.get('/', (ctx, next) => {
 }).get('/start', (ctx, next) => {
 	ctx.body = 'OK'
 
-	const num = Math.floor(Math.random() * 100)
+	const num = Math.floor(Math.random() * 1000000)
 	client.set('number', num, () => {
 		console.log(`random number: ${num}`)
 	})
