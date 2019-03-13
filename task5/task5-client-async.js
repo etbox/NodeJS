@@ -23,9 +23,9 @@ async function sendRequest() {
 	}
 	if (body === 'equal') {
 		console.log(`Bingo! The number is ${guessNum}`)
-	} else {
-		throw Error
+		return null
 	}
+	throw Error
 }
 
 async function main() {
