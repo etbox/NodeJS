@@ -1,40 +1,41 @@
 const rp = require('request-promise')
 
 const url = 'http://localhost:3000'
-const floor = 0
-const ceil = 1000000
-const guessNum = Math.floor((floor + ceil) / 2)
 
-function sendRequest([flr, cel, num]) {
+function sendRequest(floor, ceil, guessNum) {
 	return rp({
-		uri: `${url}/${num}`,
+		uri: `${url}/${guessNum}`,
 	})
 		.then((body) => {
 			console.log('body:', body)
 			if (body === 'smaller') {
-				return sendRequest([num, cel, Math.floor((num + cel) / 2)])
+				return sendRequest(guessNum, ceil, Math.floor((guessNum + ceil) / 2))
 			}
 			if (body === 'bigger') {
-				return sendRequest([flr, num, Math.floor((num + flr) / 2)])
+				return sendRequest(floor, guessNum, Math.floor((guessNum + floor) / 2))
 			}
 			if (body === 'equal') {
-				console.log(`Bingo! The number is ${num}`)
-				return null
+				return guessNum
 			}
 			throw Error(body)
 		})
-		.catch((err) => {
-			console.log(err)
-		})
+		.catch(err => console.log(err))
 }
 
-rp({
-	uri: `${url}/start`,
-})
-	.then((body) => {
-		console.log('body:', body)
-		return sendRequest([floor, ceil, guessNum])
+function promiseMain(floor, ceil) {
+	rp({
+		uri: `${url}/start`,
 	})
-	.catch((err) => {
-		console.log(err)
-	})
+		.then((body) => {
+			console.log('body:', body)
+			if (body.search(/^[A-Za-z]+$/) === -1) {
+				throw Error(body)
+			}
+
+			sendRequest(floor, ceil, Math.floor((floor + ceil) / 2))
+				.then(guessNum => console.log(`Bingo! The guessNumber is ${guessNum}`)).catch(err => console.log(err))
+		})
+		.catch(err => console.log(err))
+}
+
+promiseMain(0, 1000000)
