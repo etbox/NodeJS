@@ -22,7 +22,7 @@ function sendRequest(num, flr, cel) {
 		} else if (body === 'equal') {
 			console.log(`Bingo! The number is ${num}`)
 		} else {
-			throw Error
+			throw Error(body)
 		}
 	})
 }

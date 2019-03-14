@@ -1,32 +1,28 @@
 const rp = require('request-promise')
 
 const url = 'http://localhost:3000'
-let guessNum = 500000
-let floor = 0
-let ceil = 1000000
+const floor = 0
+const ceil = 1000000
+const guessNum = Math.floor((floor + ceil) / 2)
 
-function sendRequest() {
+function sendRequest([flr, cel, num]) {
 	return rp({
-		uri: `${url}/${guessNum}`,
+		uri: `${url}/${num}`,
 	})
 		.then((body) => {
 			// Process html...
 			console.log('body:', body)
 			if (body === 'smaller') {
-				floor = guessNum
-				guessNum = Math.floor((guessNum + ceil) / 2)
-				return sendRequest()
+				return sendRequest([num, cel, Math.floor((num + cel) / 2)])
 			}
 			if (body === 'bigger') {
-				ceil = guessNum
-				guessNum = Math.floor((guessNum + floor) / 2)
-				return sendRequest()
+				return sendRequest([flr, num, Math.floor((num + flr) / 2)])
 			}
 			if (body === 'equal') {
-				console.log(`Bingo! The number is ${guessNum}`)
+				console.log(`Bingo! The number is ${num}`)
 				return null
 			}
-			throw Error
+			throw Error(body)
 		})
 		.catch((err) => {
 			// Crawling failed...
@@ -40,7 +36,7 @@ rp({
 	.then((body) => {
 		// Process html...
 		console.log('body:', body)
-		return sendRequest()
+		return sendRequest([floor, ceil, guessNum])
 	})
 	.catch((err) => {
 		// Crawling failed...
