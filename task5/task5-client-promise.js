@@ -2,17 +2,19 @@ const rp = require('request-promise')
 
 const url = 'http://localhost:3000'
 
-function sendRequest(floor, ceil, guessNum) {
+function sendRequest(floor, ceil) {
+	const guessNum = Math.floor((floor + ceil) / 2)
+
 	return rp({
 		uri: `${url}/${guessNum}`,
 	})
 		.then((body) => {
 			console.log('body:', body)
 			if (body === 'smaller') {
-				return sendRequest(guessNum, ceil, Math.floor((guessNum + ceil) / 2))
+				return sendRequest(guessNum, ceil)
 			}
 			if (body === 'bigger') {
-				return sendRequest(floor, guessNum, Math.floor((guessNum + floor) / 2))
+				return sendRequest(floor, guessNum)
 			}
 			if (body === 'equal') {
 				return guessNum
@@ -32,7 +34,7 @@ function promiseMain(floor, ceil) {
 				throw Error(body)
 			}
 
-			return sendRequest(floor, ceil, Math.floor((floor + ceil) / 2))
+			return sendRequest(floor, ceil)
 		})
 		.catch(err => console.log(err))
 }
