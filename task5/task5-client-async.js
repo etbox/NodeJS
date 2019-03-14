@@ -10,7 +10,6 @@ async function main() {
 		uri: `${url}/start`,
 	})
 
-	// Process html...
 	console.log('body:', body)
 	if (body.search(/^[A-Za-z]+$/) === -1) {
 		throw Error(body)

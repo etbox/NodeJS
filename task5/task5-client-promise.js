@@ -10,7 +10,6 @@ function sendRequest([flr, cel, num]) {
 		uri: `${url}/${num}`,
 	})
 		.then((body) => {
-			// Process html...
 			console.log('body:', body)
 			if (body === 'smaller') {
 				return sendRequest([num, cel, Math.floor((num + cel) / 2)])
@@ -25,7 +24,6 @@ function sendRequest([flr, cel, num]) {
 			throw Error(body)
 		})
 		.catch((err) => {
-			// Crawling failed...
 			console.log(err)
 		})
 }
@@ -34,11 +32,9 @@ rp({
 	uri: `${url}/start`,
 })
 	.then((body) => {
-		// Process html...
 		console.log('body:', body)
 		return sendRequest([floor, ceil, guessNum])
 	})
 	.catch((err) => {
-		// Crawling failed...
 		console.log(err)
 	})

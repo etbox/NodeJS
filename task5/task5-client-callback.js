@@ -1,38 +1,38 @@
 const request = require('request')
 
 const url = 'http://localhost:3000'
-const floor = 0
-const ceil = 1000000
-const guessNum = Math.floor((floor + ceil) / 2)
 
-function sendRequest(num, flr, cel) {
+function sendRequest(floor, ceil, guessNum) {
 	request({
 		baseUrl: url,
-		url: `/${num}`,
+		url: `/${guessNum}`,
 	}, (error, response, body) => {
-		console.log('body:', body) // Print the HTML for the homepage.
+		console.log('body:', body)
 		if (body === 'smaller') {
-			// flr = num
-			// num = Math.floor((num + cel) / 2)
-			sendRequest(Math.floor((num + cel) / 2), num, cel)
+			sendRequest(guessNum, ceil, Math.floor((guessNum + ceil) / 2))
 		} else if (body === 'bigger') {
-			// cel = num
-			// num = Math.floor((num + flr) / 2)
-			sendRequest(Math.floor((num + flr) / 2), flr, num)
+			sendRequest(floor, guessNum, Math.floor((guessNum + floor) / 2))
 		} else if (body === 'equal') {
-			console.log(`Bingo! The number is ${num}`)
+			console.log(`Bingo! The number is ${guessNum}`)
 		} else {
 			throw Error(body)
 		}
 	})
 }
 
-request({
-	baseUrl: url,
-	url: '/start',
-}, (error, response, body) => {
-	console.log('error:', error) // Print the error if one occurred
-	console.log('statusCode:', response && response.statusCode) // Print the response status code if a response was received
-	console.log('body:', body) // Print the HTML for the homepage.
-	sendRequest(guessNum, floor, ceil)
-})
+
+function callbackMain(floor, ceil, callback) {
+	request({
+		baseUrl: url,
+		url: '/start',
+	}, (error, response, body) => {
+		console.log('body:', body)
+		if (body.search(/^[A-Za-z]+$/) === -1) {
+			throw Error(body)
+		}
+
+		callback(floor, ceil, Math.floor((floor + ceil) / 2)) // callback形式无法返回最终值，除非使用全局变量或者传递的参数为对象
+	})
+}
+
+callbackMain(0, 1000000, sendRequest)

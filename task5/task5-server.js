@@ -18,8 +18,6 @@ client.on('connect', () => { // 提示已连接redis
 	console.log('connected to Redis!')
 })
 
-// let getCtx // 用于判断ctx的指向
-
 router.get('/', (ctx, next) => {
 	ctx.body = 'Hello World'
 }).get('/start', (ctx, next) => {
@@ -32,8 +30,6 @@ router.get('/', (ctx, next) => {
 }).get('/:number', async (ctx, next) => {
 	const clientNum = Number(ctx.params.number) // 请求favicon.ico时也会触发
 	console.log(`clientNum: ${clientNum}`)
-
-	// getCtx = ctx
 
 	await next()
 
@@ -56,13 +52,12 @@ program
 	.option('-p, --port <n>', '端口号', parseInt) // 使用命令行指定服务器监听的端口号
 	.parse(process.argv)
 
-console.log('port: %j', program.port)
+console.log('port: %j', program.port || 3000)
 if (!program.port) {
 	program.port = 3000
 }
 
 async function getNumber() { // 函数定义放外面，不要在函数里定义函数；async表明返回值为Promise
-	// console.log('async')
 	return getAsync('number')
 }
 
@@ -71,6 +66,5 @@ app
 	.use(router.allowedMethods())
 	.use(async (ctx) => { // 异步获取数据，并将数据保存在ctx中
 		ctx.serverNum = await getNumber()
-		// console.log(`judge ${ctx === getCtx}`)
 	})
 	.listen(program.port)
