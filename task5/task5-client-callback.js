@@ -2,7 +2,7 @@ const request = require('request')
 
 const url = 'http://localhost:3000'
 
-function sendRequest(floor, ceil) {
+function sendRequest(floor, ceil, callback) {
 	const guessNum = Math.floor((floor + ceil) / 2)
 
 	request({
@@ -11,11 +11,11 @@ function sendRequest(floor, ceil) {
 	}, (error, response, body) => {
 		console.log('body:', body)
 		if (body === 'smaller') {
-			sendRequest(guessNum, ceil)
+			sendRequest(guessNum, ceil, callback)
 		} else if (body === 'bigger') {
-			sendRequest(floor, guessNum)
+			sendRequest(floor, guessNum, callback)
 		} else if (body === 'equal') {
-			console.log(`Bingo! The number is ${guessNum}`)
+			callback(guessNum)
 		} else {
 			throw Error(body)
 		}
@@ -28,12 +28,14 @@ function callbackMain(floor, ceil, callback) {
 		url: '/start',
 	}, (error, response, body) => {
 		console.log('body:', body)
-		if (body.search(/^[A-Za-z]+$/) === -1) {
+		if (body.search(/^[A-Za-z]+$/) === -1) { // 如果不返回一个单词就是有异常
 			throw Error(body)
 		}
 
-		callback(floor, ceil) // callback形式无法返回最终值，除非使用全局变量或者传递的参数为对象
+		sendRequest(floor, ceil, callback)
 	})
 }
 
-callbackMain(0, 1000000, sendRequest)
+callbackMain(0, 1000000, (n) => {
+	console.log(`Bingo! The number is ${n}`)
+})
