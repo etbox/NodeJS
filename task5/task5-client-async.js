@@ -1,11 +1,8 @@
 const rp = require('request-promise')
 
 const url = 'http://localhost:3000'
-let floor = 0
-let ceil = 1000000
-let guessNum = Math.floor((floor + ceil) / 2)
 
-async function main() {
+async function asyncMain(floor, ceil) {
 	let body = await rp({
 		uri: `${url}/start`,
 	})
@@ -15,24 +12,27 @@ async function main() {
 		throw Error(body)
 	}
 
+	let guessNum = Math.floor((floor + ceil) / 2)
 	do {
-		body = await rp({ // 使用循环才需要改变全局变量，因为不会产生局部变量
+		body = await rp({
 			uri: `${url}/${guessNum}`,
 		})
-
 		console.log('body:', body)
 
 		if (body === 'smaller') {
 			floor = guessNum
 			guessNum = Math.floor((guessNum + ceil) / 2)
-		}
-		if (body === 'bigger') {
+		} else if (body === 'bigger') {
 			ceil = guessNum
 			guessNum = Math.floor((guessNum + floor) / 2)
+		} else if (body !== 'equal') {
+			throw Error(body)
 		}
 	} while (body !== 'equal')
 
-	console.log(`Bingo! The number is ${guessNum}`)
+	return guessNum
 }
 
-main()
+asyncMain(0, 1000000)
+	.then(guessNum => console.log(`Bingo! The number is ${guessNum}`))
+	.catch(err => console.log(err))

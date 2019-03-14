@@ -20,7 +20,6 @@ function sendRequest(floor, ceil, guessNum) {
 	})
 }
 
-
 function callbackMain(floor, ceil, callback) {
 	request({
 		baseUrl: url,

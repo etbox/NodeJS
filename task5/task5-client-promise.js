@@ -23,7 +23,7 @@ function sendRequest(floor, ceil, guessNum) {
 }
 
 function promiseMain(floor, ceil) {
-	rp({
+	return rp({
 		uri: `${url}/start`,
 	})
 		.then((body) => {
@@ -32,10 +32,11 @@ function promiseMain(floor, ceil) {
 				throw Error(body)
 			}
 
-			sendRequest(floor, ceil, Math.floor((floor + ceil) / 2))
-				.then(guessNum => console.log(`Bingo! The guessNumber is ${guessNum}`)).catch(err => console.log(err))
+			return sendRequest(floor, ceil, Math.floor((floor + ceil) / 2))
 		})
 		.catch(err => console.log(err))
 }
 
 promiseMain(0, 1000000)
+	.then(guessNum => console.log(`Bingo! The number is ${guessNum}`))
+	.catch(err => console.log(err))
