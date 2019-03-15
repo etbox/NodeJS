@@ -9,7 +9,7 @@ function sendRequest(floor, ceil, callback) {
 		baseUrl: url,
 		url: `/${guessNum}`,
 	}, (error, response, body) => {
-		console.log('body:', body)
+		console.log(`Guess body: ${body}`)
 		if (body === 'smaller') {
 			sendRequest(guessNum, ceil, callback)
 		} else if (body === 'bigger') {
@@ -27,12 +27,18 @@ function callbackMain(floor, ceil, callback) {
 		baseUrl: url,
 		url: '/start',
 	}, (error, response, body) => {
-		console.log('body:', body)
-		if (body.search(/^[A-Za-z]+$/) === -1) { // 如果不返回一个单词就是有异常
-			throw Error(body)
+		console.log(`Request body: ${body}`)
+		try {
+			if (body && body.search(/^[A-Za-z]+$/) === -1) { // 如果不返回一个单词就说明游戏没正常启动
+				throw Error(body)
+			} else if (body) {
+				sendRequest(floor, ceil, callback) // 最内层的错误会由callback进行处理，不会抛到本层
+			} else {
+				throw Error('You send a wrong requst, please modify your URL')
+			}
+		} catch (err) {
+			console.log(err)
 		}
-
-		sendRequest(floor, ceil, callback)
 	})
 }
 
