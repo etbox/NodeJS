@@ -15,9 +15,9 @@ function sendRequest(floor, ceil, callback) {
 		} else if (body === 'bigger') {
 			sendRequest(floor, guessNum, callback)
 		} else if (body === 'equal') {
-			callback(guessNum)
+			callback(null, guessNum)
 		} else {
-			throw Error(body)
+			callback(body)
 		}
 	})
 }
@@ -36,6 +36,10 @@ function callbackMain(floor, ceil, callback) {
 	})
 }
 
-callbackMain(0, 1000000, (n) => {
-	console.log(`Bingo! The number is ${n}`)
+callbackMain(0, 1000000, (error, num) => {
+	if (error) {
+		console.log(`Error: ${error}`)
+	} else {
+		console.log(`Bingo! The number is ${num}`)
+	}
 })

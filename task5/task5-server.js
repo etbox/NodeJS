@@ -44,7 +44,7 @@ router.get('/', (ctx, next) => {
 	} else if (clientNum > serverNum) {
 		ctx.body = 'bigger'
 	} else if (clientNum === serverNum) {
-		ctx.body = 'equal'
+		ctx.body = 'equal!'
 	}
 })
 
