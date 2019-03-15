@@ -44,7 +44,8 @@ router.get('/', (ctx, next) => {
 	} else if (clientNum > serverNum) {
 		ctx.body = 'bigger'
 	} else if (clientNum === serverNum) {
-		ctx.body = 'equal!' // 故意写多感叹号以报错
+		ctx.body = 'equal'
+		// ctx.body = 'equal!' // 故意写多感叹号以报错
 	}
 })
 
