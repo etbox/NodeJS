@@ -3,7 +3,7 @@ const rp = require('request-promise')
 const url = 'http://localhost:3000'
 
 async function asyncMain(floor, ceil) {
-	let body = await rp({
+	let body = await rp({ // await会把错误向外层抛，故不用专门处理
 		uri: `${url}/start`,
 	})
 
@@ -35,4 +35,4 @@ async function asyncMain(floor, ceil) {
 
 asyncMain(0, 1000000)
 	.then(guessNum => console.log(`Bingo! The number is ${guessNum}`))
-	.catch(err => console.log(err))
+	.catch(err => console.log(`Something goes wrong: ${err}`))
