@@ -9,7 +9,7 @@ async function sendRequest(floor, ceil) {
 	})
 
 	console.log(`Guess body: ${body}`)
-	if (body === 'smaller') {
+	if (body === 'smaller') { // 不必加 await，因为 async 会将其封装为 promise
 		return sendRequest(guessNum, ceil)
 	}
 	if (body === 'bigger') {
@@ -36,6 +36,6 @@ async function asyncMain(floor, ceil) {
 	return sendRequest(floor, ceil)
 }
 
-asyncMain(0, 1000000)
+asyncMain(0, 1000000) // async 是把异步的处理写成同步的样子，故错误处理用 try/catch
 	.then(guessNum => console.log(`Bingo! The number is ${guessNum}`))
-	.catch(err => console.log(`Something goes wrong: ${err}`))
+	.catch(err => console.log(`Something goes wrong: ${err.stack}`))
