@@ -3,7 +3,6 @@ const Koa = require('koa')
 const serve = require('koa-static')
 const views = require('koa-views')
 const path = require('path')
-const bodyParser = require('koa-bodyparser')
 const controller = require('./controller')
 
 const app = new Koa()
@@ -22,8 +21,7 @@ app
 		console.log(`Process ${ctx.request.method} ${ctx.request.url} ...`)
 		await next()
 	})
-	.use(serve(`${__dirname}/static`)) // 处理静态资源
-	.use(bodyParser()) // 解析 POST 请求
+	.use(serve(path.join(__dirname, './static'))) // 处理静态资源
 	.use(views(path.join(__dirname, './views'), { // 加载模板引擎
 		extension: 'ejs',
 	}))

@@ -5,18 +5,36 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Number Guesser</title>
-	<link rel="stylesheet" href="/static/css/bootstrap.css">
-	<script src="/static/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="/css/bootstrap.css">
+	<script src="/js/bootstrap.js"></script>
 </head>
 
 <body>
-	<header>Number Guesser</header>
-	<input type="text" placeholder="Guess A Number">
-	<button>Restart</button>
-	<button>Submit</button>
-	<main>
-		<%= result %>
-	</main>
+	<div class="container text-center" style="padding-top: 200px">
+		<header class="h1" style="color:rgba(173, 216, 230, 1)">Number Guesser</header>
+		<form method="post" name="guess">
+			<input type="number" placeholder="Guess A Number" class="form-control" id="number" required>
+			<div class="row" style="margin-top:20px">
+				<div class="col-md-6">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+				<div class="col-md-6">
+					<a href="/start">
+						<button type="button" class="btn btn-info">Restart</button>
+					</a>
+				</div>
+			</div>
+		</form>
+		<main class="h2" style="color:#999">
+			<%= result %>
+		</main>
+	</div>
+	<script>
+		window.onsubmit = () => {
+			console.log(document.querySelector('#number').value)
+			document.guess.action = `/${document.querySelector('#number').value}`
+		}
+	</script>
 </body>
 
 </html>

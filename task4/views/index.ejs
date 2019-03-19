@@ -7,15 +7,21 @@
 	<title>
 		<%= title %>
 	</title>
-	<link rel="stylesheet" href="/static/css/bootstrap.css">
-	<script src="/static/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="/css/bootstrap.css">
+	<script src="/js/bootstrap.js"></script>
 </head>
 
 <body>
-	<header>
-		<%= title %>
-	</header>
-	<button>Press To Start</button>
+	<div class="container text-center" style="padding-top: 200px">
+		<header class="h1" style="color:rgba(173, 216, 230, 1)">
+			<%= title %>
+		</header>
+		<% if (index) { %>
+		<a href="/start">
+			<button type="button" class="btn btn-primary" style="margin-top: 50px">Press To Start</button>
+		</a>
+		<% } %>
+	</div>
 </body>
 
 </html>

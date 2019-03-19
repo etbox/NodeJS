@@ -21,10 +21,11 @@ router
 		const title = 'Hello world'
 		await ctx.render('index', {
 			title,
+			index: true,
 		})
 	})
 	.get('/start', async (ctx, next) => {
-		const result = 'Input to guess'
+		const result = 'Input To Guess'
 		await ctx.render('number-guesser', {
 			result,
 		})
@@ -34,8 +35,8 @@ router
 			console.log(`random number: ${num}`)
 		})
 	})
-	.get('/:number', async (ctx, next) => {
-		const clientNum = Number(ctx.params.number) // 请求favicon.ico时也会触发
+	.post('/:number', async (ctx, next) => {
+		const clientNum = Number(ctx.params.number) // 只会在 post 请求触发
 		console.log(`clientNum: ${clientNum}`)
 
 		await next() // 等待 redis 取数
@@ -44,23 +45,22 @@ router
 
 		let result
 
-		if (ctx.serverNum === null || ctx.serverNum === undefined) { // 服务器出错
+		if (serverNum === null
+			|| serverNum === undefined
+			|| Number.isNaN(clientNum)) { // 服务器出错
 			const title = 'Something Goes Wrong'
 			await ctx.render('index', {
 				title,
+				index: false,
 			})
-		} else if (clientNum < serverNum) {
-			result = 'smaller'
-			await ctx.render('number-guesser', {
-				result,
-			})
-		} else if (clientNum > serverNum) {
-			result = 'bigger'
-			await ctx.render('number-guesser', {
-				result,
-			})
-		} else if (clientNum === serverNum) {
-			result = 'equal'
+		} else {
+			if (clientNum < serverNum) {
+				result = 'Smaller'
+			} else if (clientNum > serverNum) {
+				result = 'Bigger'
+			} else if (clientNum === serverNum) {
+				result = 'Equal'
+			}
 			await ctx.render('number-guesser', {
 				result,
 			})
