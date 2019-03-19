@@ -4,18 +4,19 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>
-		<%= title %>
-	</title>
+	<title>Number Guesser</title>
 	<link rel="stylesheet" href="/static/css/bootstrap.css">
 	<script src="/static/js/bootstrap.js"></script>
 </head>
 
 <body>
-	<header>
-		<%= title %>
-	</header>
-	<button>Press To Start</button>
+	<header>Number Guesser</header>
+	<input type="text" placeholder="Guess A Number">
+	<button>Restart</button>
+	<button>Submit</button>
+	<main>
+		<%= result %>
+	</main>
 </body>
 
 </html>
