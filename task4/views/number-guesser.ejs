@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Number Guesser</title>
+	<!-- <link rel="stylesheet" href="/css/bootstrap.min.css"> -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	 crossorigin="anonymous">
+	<!-- <script src="/js/bootstrap.min.js"></script> -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+	 crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<div class="container text-center" style="padding-top: 200px">
+		<header class="h1" style="color:rgba(173, 216, 230, 1)">Number Guesser</header>
+		<form method="post" name="guess">
+			<input type="number" placeholder="Guess A Number" class="form-control" id="number" required>
+			<div class="row" style="margin-top:20px">
+				<div class="col-md-6">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+				<div class="col-md-6">
+					<a href="/start">
+						<button type="button" class="btn btn-info">Restart</button>
+					</a>
+				</div>
+			</div>
+		</form>
+		<main class="h2" style="color:#999">
+			<%= result %>
+		</main>
+	</div>
+	<script>
+		window.onsubmit = () => {
+			console.log(document.querySelector('#number').value)
+			document.guess.action = `/${document.querySelector('#number').value}`
+		}
+	</script>
+</body>
+
+</html>
