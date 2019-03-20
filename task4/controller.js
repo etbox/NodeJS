@@ -39,15 +39,12 @@ router
 		const clientNum = Number(ctx.params.number) // 只会在 post 请求触发
 		console.log(`clientNum: ${clientNum}`)
 
-		await next() // 等待 redis 取数
-
 		const serverNum = Number(ctx.serverNum)
 
 		let result
 
-		if (serverNum === null
-			|| serverNum === undefined
-			|| Number.isNaN(clientNum)) { // 服务器出错
+		if (Number.isNaN(serverNum)
+			|| Number.isNaN(clientNum)) { // 发生意外
 			const title = 'Something Goes Wrong'
 			await ctx.render('index', {
 				title,
@@ -69,7 +66,5 @@ router
 
 module.exports = {
 	route: () => router.routes(),
-	getNumber: async (ctx) => {
-		ctx.serverNum = await getNumber()
-	},
+	getNumber,
 }
