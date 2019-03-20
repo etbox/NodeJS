@@ -17,11 +17,9 @@ client.on('connect', () => { // 提示已连接redis
 
 router
 	.get('/', async (ctx, next) => {
-		console.log('index')
-		const title = 'Hello world'
-		await ctx.render('index', {
-			title,
-			index: true,
+		const result = 'Press To Start ↗'
+		await ctx.render('number-guesser', {
+			result,
 		})
 	})
 	.get('/start', async (ctx, next) => {
@@ -45,10 +43,9 @@ router
 
 		if (Number.isNaN(serverNum)
 			|| Number.isNaN(clientNum)) { // 发生意外
-			const title = 'Something Goes Wrong'
-			await ctx.render('index', {
-				title,
-				index: false,
+			result = 'Something Goes Wrong'
+			await ctx.render('number-guesser', {
+				result,
 			})
 		} else {
 			if (clientNum < serverNum) {
