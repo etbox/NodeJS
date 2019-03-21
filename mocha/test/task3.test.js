@@ -10,21 +10,17 @@ describe('"测试套件"（test suite）', () => {
 })
 
 describe('接口测试', () => {
-	it('request /start', () => {
-		rp({
-			uri: `${url}/start`,
-		}).then((body) => {
-			body.should.be.equal('OK')
-		})
-	})
+	it('request /start', () => rp({
+		uri: `${url}/start`,
+	}).then((body) => {
+		body.should.be.equal('OK')
+	}))
 
-	it('request /:number', () => {
-		rp({
-			uri: `${url}/50`,
-		}).then((body) => {
-			body.should.be.equalOneOf('smaller', 'bigger', 'equal')
-		})
-	})
+	it('request /:number', () => rp({
+		uri: `${url}/50`,
+	}).then((body) => {
+		body.should.be.equalOneOf('smaller', 'bigger', 'equal')
+	}))
 })
 
 describe('完整玩一遍', () => {
@@ -48,11 +44,9 @@ describe('完整玩一遍', () => {
 			})
 	}
 
-	it('从 /start 开始后进行递归，最终得到答案', () => {
-		rp({
-			uri: `${url}/start`,
-		})
-			.then(() => sendRequest(0, 100))
-			.then(body => body.should.be.exactly('equal'))
+	it('从 /start 开始后进行递归，最终得到答案', () => rp({
+		uri: `${url}/start`,
 	})
+		.then(() => sendRequest(0, 100))
+		.then(body => body.should.be.exactly('equal')))
 })
