@@ -2,20 +2,31 @@ const router = require('koa-router')()
 
 router
 	.get('/', async (ctx, next) => {
-		const result = 'Press To Start ↗'
-		await ctx.render('number-guesser', {
-			result,
+		const title = 'Home'
+		const userName = 'World'
+		const btnLeft = '/Register'
+		const btnRight = '/Login'
+		await ctx.render('index', {
+			title,
+			userName,
+			btnLeft,
+			btnRight,
+		})
+	})
+	.get('/register', async (ctx, next) => {
+		const title = 'Register'
+		const btnLeft = '/Register'
+		const btnRight = '/Login'
+		await ctx.render('index', {
+			title,
+			btnLeft,
+			btnRight,
 		})
 	})
 	.get('/start', async (ctx, next) => {
 		const result = 'Input To Guess'
 		await ctx.render('number-guesser', {
 			result,
-		})
-
-		const num = Math.floor(Math.random() * 100)
-		client.set('number', num, () => {
-			console.log(`random number: ${num}`)
 		})
 	})
 	.post('/:number', async (ctx, next) => {
