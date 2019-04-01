@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const views = require('koa-views')
 const path = require('path')
+const bodyParser = require('koa-bodyparser')
 const controller = require('./controller')
 
 const app = new Koa()
@@ -17,5 +18,6 @@ app
 			extension: 'ejs',
 		}),
 	)
+	.use(bodyParser()) // 处理 post 表单
 	.use(controller.route()) // 路由处理
 	.listen(3000)

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title><%= title %></title>
+		<link
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+		/>
+		<script
+			src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+			integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+			crossorigin="anonymous"
+		></script>
+	</head>
+
+	<body>
+		<div class="container text-center" style="padding-top: 200px">
+			<form name="register" method="POST">
+				<div class="form-group">
+					<label for="username">Username</label>
+					<input
+						type="text"
+						class="form-control"
+						id="username"
+						placeholder="Enter Username"
+						name="username"
+						required
+					/>
+					<div class="invalid-feedback">
+						Please choose a username.
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input
+						type="password"
+						class="form-control"
+						id="password"
+						placeholder="Password"
+						name="password"
+						required
+					/>
+				</div>
+
+				<div class="row" style="padding-top:20px">
+					<div class="col-md-6">
+						<button type="submit" class="btn btn-primary">
+							<%= btnLeft.substr(1) %>
+						</button>
+					</div>
+					<div class="col-md-6">
+						<a href="/login">
+							<button type="button" class="btn btn-info">
+								<%= btnRight.substr(1) %>
+							</button>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+			integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			crossorigin="anonymous"
+		></script>
+		<script>
+			;(() => {
+				'use strict'
+				window.addEventListener(
+					'load',
+					() => {
+						const forms = document.getElementsByTagName('form')
+						const validation = Array.prototype.filter.call(forms, form => {
+							const username = document.querySelector('#username')
+							username.addEventListener('blur', event => {
+								if (event.target.value) {
+									$.ajax({ url: 'check-name', data: event.target.value }).done(
+										res => console.log(res),
+									)
+								}
+							})
+							form.addEventListener(
+								'submit',
+								event => {
+									// document.register.action = `/`
+									// event.preventDefault()
+									// return false
+								},
+								false,
+							)
+						})
+					},
+					false,
+				)
+			})()
+		</script>
+	</body>
+</html>
