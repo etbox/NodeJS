@@ -37,23 +37,19 @@ router
 			btnRight,
 		})
 	})
-	.get('/check-name', async (ctx, next) => {
+	.get('/check-name', async (ctx) => {
+		// ajax 请求检查是否重名
 		let name = ctx.url.split('?')[1]
-		console.log(`username: ${name}`)
+		console.log(`check username: ${name}`)
 
-		mongoose
-			.connect('mongodb://localhost/task6', { useNewUrlParser: true })
-			.then(() => {
-				User.find({ name }).then((res) => {
-					console.log(res)
-					if (res.length === 0) {
-						name = 'no result'
-					}
-				})
-			})
-			.catch(err => console.log(err))
-
-		await next() // TODO: 异步 body
+		await mongoose.connect('mongodb://localhost:27017/task6', {
+			useNewUrlParser: true,
+		})
+		const response = await User.find({ name })
+		console.log(`result: ${response}`)
+		if (response.length === 0) {
+			name = 'no result'
+		}
 		ctx.body = name
 	})
 	.post('/register', async (ctx) => {
