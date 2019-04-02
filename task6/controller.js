@@ -1,5 +1,11 @@
 const router = require('koa-router')()
 const mongoose = require('mongoose')
+const crypto = require('crypto')
+
+const md5 = data => crypto
+		.createHash('md5')
+		.update(data)
+		.digest('hex')
 
 const userSchema = new mongoose.Schema({
 	name: String,
@@ -52,9 +58,31 @@ router
 		}
 		ctx.body = name
 	})
+	.get('/login', async (ctx) => {
+		const title = 'Login'
+		const btnLeft = '/Login'
+		const btnRight = '/Register'
+		await ctx.render('forms', {
+			title,
+			btnLeft,
+			btnRight,
+		})
+	})
 	.post('/register', async (ctx) => {
-		console.log(ctx.request.body)
-		ctx.body = ctx.request.body
+		const form = ctx.request.body
+		const salt = Math.random()
+		const newUser = new User({
+			name: form.username,
+			salt,
+			// 在这里调用 this 会指向全局
+			password: md5(`${form.username}${salt}${form.password}`),
+		})
+		await mongoose.connect('mongodb://localhost:27017/task6', {
+			useNewUrlParser: true,
+		})
+		console.log(await newUser.save())
+		// ctx.url = '/'
+		ctx.body = newUser
 	})
 	.get('/start', async (ctx) => {
 		const result = 'Input To Guess'
@@ -89,24 +117,6 @@ router
 			})
 		}
 	})
-
-mongoose
-	.connect('mongodb://localhost/task6', { useNewUrlParser: true })
-	.then(() => {
-		console.log('Connected to task6!')
-
-		const admin = new User({
-			name: 'admin',
-			salt: Math.random(),
-			password: 'admin',
-		})
-
-		// admin
-		// 	.save()
-		// 	.then(res => console.log(res))
-		// 	.catch(err => console.log(err))
-	})
-	.catch(err => console.log(err))
 
 module.exports = {
 	route: () => router.routes(),
