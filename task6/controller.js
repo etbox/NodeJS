@@ -62,9 +62,9 @@ router
 		await mongoose.connect('mongodb://localhost:27017/task6', {
 			useNewUrlParser: true,
 		})
-		const response = await User.find({ name })
-		console.log(`result: ${response}`)
-		if (response.length === 0) {
+		const findRes = await User.find({ name })
+		console.log(`result: ${findRes}`)
+		if (findRes.length === 0) {
 			name = 'no result'
 		}
 		ctx.body = name
@@ -75,8 +75,8 @@ router
 			useNewUrlParser: true,
 		})
 		// 防止反复提交，确认数据库没有后才提交
-		const response = await User.find({ name: form.username })
-		if (response.length === 0) {
+		const findRes = await User.find({ name: form.username })
+		if (findRes.length === 0) {
 			const salt = Math.random()
 			const newUser = new User({
 				name: form.username,
@@ -84,7 +84,9 @@ router
 				// 在这里调用 this 会指向全局
 				password: md5(`${form.username}${salt}${form.password}`),
 			})
-			console.log(await newUser.save())
+			const saveRes = await newUser.save()
+			console.log(saveRes)
+			ctx.session.userID = saveRes._id
 			ctx.session.username = form.username
 			ctx.session.isLogin = true
 		}
@@ -121,12 +123,13 @@ router
 			useNewUrlParser: true,
 		})
 		// 登录时要确认有账号
-		const response = await User.find({ name: form.username })
-		if (response.length) {
-			const userInfo = response[0]
+		const findRes = await User.find({ name: form.username })
+		if (findRes.length) {
+			const userInfo = findRes[0]
 			const postPW = md5(`${form.username}${userInfo.salt}${form.password}`)
 			// 验证密码
 			if (postPW === userInfo.password) {
+				ctx.session.userID = userInfo._id
 				ctx.session.username = form.username
 				ctx.session.isLogin = true
 				// redirect 相当于 return
