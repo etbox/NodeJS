@@ -2,11 +2,13 @@ const router = require('koa-router')()
 const mongoose = require('mongoose')
 const crypto = require('crypto')
 
+// 将 md5 封装为函数以直接调用
 const md5 = data => crypto
 		.createHash('md5')
 		.update(data)
 		.digest('hex')
 
+// schema 和 model 全局只能存在一个，不能等路由时再次定义，会报错
 const userSchema = new mongoose.Schema({
 	name: String,
 	salt: Number,
@@ -22,10 +24,13 @@ const Num = mongoose.model('Num', numberSchema)
 
 router
 	.get('/', async (ctx) => {
+		// 检查是否有登录
+		const sessionName = ctx.session.isLogin ? ctx.session.username : ''
 		const title = 'Home'
-		const userName = 'World'
-		const btnLeft = '/Register'
-		const btnRight = '/Login'
+		const userName = sessionName || 'World!'
+		// 登录与否功能不同
+		const btnLeft = sessionName ? '/Start' : '/Register'
+		const btnRight = sessionName ? '/Logout' : '/Login'
 		await ctx.render('index', {
 			title,
 			userName,
@@ -33,7 +38,13 @@ router
 			btnRight,
 		})
 	})
+	.get('/favicon.ico', () => null)
 	.get('/register', async (ctx) => {
+		// 已登录则免去多余的表单提交
+		if (ctx.session.isLogin) {
+			ctx.redirect('/')
+			ctx.status = 302
+		}
 		const title = 'Register'
 		const btnLeft = '/Register'
 		const btnRight = '/Login'
@@ -58,7 +69,40 @@ router
 		}
 		ctx.body = name
 	})
+	.post('/register', async (ctx) => {
+		const form = ctx.request.body
+		await mongoose.connect('mongodb://localhost:27017/task6', {
+			useNewUrlParser: true,
+		})
+		// 防止反复提交，确认数据库没有后才提交
+		const response = await User.find({ name: form.username })
+		if (response.length === 0) {
+			const salt = Math.random()
+			const newUser = new User({
+				name: form.username,
+				salt,
+				// 在这里调用 this 会指向全局
+				password: md5(`${form.username}${salt}${form.password}`),
+			})
+			console.log(await newUser.save())
+			ctx.session.username = form.username
+			ctx.session.isLogin = true
+		}
+		ctx.redirect('/')
+		ctx.status = 303
+	})
+	.get('/logout', (ctx) => {
+		// 取消登录状态并跳转回首页
+		ctx.session.isLogin = false
+		ctx.redirect('/')
+		ctx.status = 302
+	})
 	.get('/login', async (ctx) => {
+		// 已登录则免去多余的表单提交
+		if (ctx.session.isLogin) {
+			ctx.redirect('/')
+			ctx.status = 302
+		}
 		const title = 'Login'
 		const btnLeft = '/Login'
 		const btnRight = '/Register'
@@ -68,21 +112,38 @@ router
 			btnRight,
 		})
 	})
-	.post('/register', async (ctx) => {
+	.post('/login', async (ctx) => {
 		const form = ctx.request.body
-		const salt = Math.random()
-		const newUser = new User({
-			name: form.username,
-			salt,
-			// 在这里调用 this 会指向全局
-			password: md5(`${form.username}${salt}${form.password}`),
-		})
+		const btnLeft = '/Login'
+		const btnRight = '/Register'
+		let title = 'Login'
 		await mongoose.connect('mongodb://localhost:27017/task6', {
 			useNewUrlParser: true,
 		})
-		console.log(await newUser.save())
-		// ctx.url = '/'
-		ctx.body = newUser
+		// 登录时要确认有账号
+		const response = await User.find({ name: form.username })
+		if (response.length) {
+			const userInfo = response[0]
+			const postPW = md5(`${form.username}${userInfo.salt}${form.password}`)
+			// 验证密码
+			if (postPW === userInfo.password) {
+				ctx.session.username = form.username
+				ctx.session.isLogin = true
+				// redirect 相当于 return
+				ctx.redirect('/')
+				ctx.status = 303
+			} else {
+				title = 'Wrong Username Or Password'
+			}
+		} else {
+			title = 'Username Dose Not Exist'
+		}
+		// 登录成功后会跳转至首页，异常则重新渲染带错误信息的 login 页面
+		await ctx.render('forms', {
+			title,
+			btnLeft,
+			btnRight,
+		})
 	})
 	.get('/start', async (ctx) => {
 		const result = 'Input To Guess'

@@ -2,9 +2,12 @@ const Koa = require('koa')
 const views = require('koa-views')
 const path = require('path')
 const bodyParser = require('koa-bodyparser')
+const session = require('koa-session')
 const controller = require('./controller')
 
 const app = new Koa()
+
+app.keys = ['some secret hurr'] // 用于计算 hash 值并放在 cookie 中，使产生的 signedCookie 防篡改
 
 app
 	.use(async (ctx, next) => {
@@ -19,5 +22,13 @@ app
 		}),
 	)
 	.use(bodyParser()) // 处理 post 表单
+	.use(
+		session(
+			{
+				key: 'username',
+			},
+			app,
+		),
+	) // 操作 session
 	.use(controller.route()) // 路由处理
 	.listen(3000)
