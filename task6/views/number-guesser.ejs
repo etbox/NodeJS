@@ -50,8 +50,8 @@
 		</div>
 		<script>
 			window.onsubmit = () => {
-				const num = document.getElementById('id').value
-				const main = document.getElementsByClassName(h2)[0]
+				const num = document.getElementById('number').value
+				const main = document.getElementsByClassName('h2')[0]
 				main.innerHTML = 'Judging'
 				console.log(num)
 				document.guess.action = `/${num}`

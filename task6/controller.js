@@ -45,6 +45,7 @@ router
 			ctx.redirect('/')
 			ctx.status = 302
 		}
+
 		const title = 'Register'
 		const btnLeft = '/Register'
 		const btnRight = '/Login'
@@ -75,8 +76,8 @@ router
 		await mongoose.connect('mongodb://localhost:27017/task6', {
 			useNewUrlParser: true,
 		})
-		// 防止反复提交，确认数据库没有后才提交
 		const findRes = await User.findOne({ name: form.username })
+		// 防止反复提交，确认数据库没有后才提交
 		if (!findRes) {
 			const salt = Math.random()
 			const newUser = new User({
@@ -87,6 +88,7 @@ router
 			})
 			const saveRes = await newUser.save()
 			console.log(saveRes)
+			// 数据保存在 session 中
 			ctx.session.userID = saveRes._id
 			ctx.session.username = form.username
 			ctx.session.isLogin = true
@@ -106,6 +108,7 @@ router
 			ctx.redirect('/')
 			ctx.status = 302
 		}
+
 		const title = 'Login'
 		const btnLeft = '/Login'
 		const btnRight = '/Register'
@@ -120,11 +123,12 @@ router
 		const btnLeft = '/Login'
 		const btnRight = '/Register'
 		let title = 'Login'
+
 		await mongoose.connect('mongodb://localhost:27017/task6', {
 			useNewUrlParser: true,
 		})
-		// 登录时要确认有账号
 		const findRes = await User.findOne({ name: form.username })
+		// 登录时要确认有账号
 		if (findRes) {
 			const userInfo = findRes
 			const postPW = md5(`${form.username}${userInfo.salt}${form.password}`)
@@ -155,10 +159,6 @@ router
 			ctx.redirect('/')
 			ctx.status = 302
 		}
-		const result = 'Input To Guess'
-		await ctx.render('number-guesser', {
-			result,
-		})
 
 		const num = Math.floor(Math.random() * 100)
 		console.log(`sever number: ${num}`)
@@ -167,11 +167,13 @@ router
 		})
 		const findRes = await Num.findOne({ userID: ctx.session.userID })
 		console.log(`find result: ${findRes}`)
+		// 若数据库有记录，则更新数据
 		if (findRes) {
 			findRes.number = num
 			const saveRes = await findRes.save()
 			console.log(`save result: ${saveRes}`)
 		} else {
+			// 否则创建新数据
 			const newNum = new Num({
 				userID: ctx.session.userID,
 				number: num,
@@ -179,6 +181,11 @@ router
 			const saveRes = await newNum.save()
 			console.log(`save result: ${saveRes}`)
 		}
+
+		const result = 'Input To Guess'
+		await ctx.render('number-guesser', {
+			result,
+		})
 	})
 	.post('/:number', async (ctx) => {
 		// 拦截未登录用户
@@ -186,33 +193,28 @@ router
 			ctx.redirect('/')
 			ctx.status = 302
 		}
-		const findRes = await Num.find({ userID: ctx.session.userID })
-		console.log(findRes)
-		const clientNum = findRes.number
+
+		await mongoose.connect('mongodb://localhost:27017/task6', {
+			useNewUrlParser: true,
+		})
+		const findRes = await Num.findOne({ userID: ctx.session.userID })
+		const serverNum = Number(findRes.number)
+		console.log(`serverNum: ${serverNum}`)
+
+		const clientNum = Number(ctx.params.number) // 只会在 post 请求触发
 		console.log(`clientNum: ${clientNum}`)
 
-		const serverNum = Number(ctx.serverNum)
-
-		let result
-
-		if (Number.isNaN(serverNum) || Number.isNaN(clientNum)) {
-			// 发生意外
-			result = 'Something Goes Wrong'
-			await ctx.render('number-guesser', {
-				result,
-			})
-		} else {
-			if (clientNum < serverNum) {
-				result = 'Smaller'
-			} else if (clientNum > serverNum) {
-				result = 'Bigger'
-			} else if (clientNum === serverNum) {
-				result = 'Equal'
-			}
-			await ctx.render('number-guesser', {
-				result,
-			})
+		let result = 'Something Goes Wrong' // 发生意外就会显示
+		if (clientNum < serverNum) {
+			result = 'Smaller'
+		} else if (clientNum > serverNum) {
+			result = 'Bigger'
+		} else if (clientNum === serverNum) {
+			result = 'Equal'
 		}
+		await ctx.render('number-guesser', {
+			result,
+		})
 	})
 
 module.exports = {
