@@ -62,9 +62,10 @@ router
 		await mongoose.connect('mongodb://localhost:27017/task6', {
 			useNewUrlParser: true,
 		})
-		const findRes = await User.find({ name })
-		console.log(`result: ${findRes}`)
-		if (findRes.length === 0) {
+		const findRes = await User.findOne({ name })
+		console.log(`find result: ${findRes}`)
+		// 无结果时 findRes 为 null
+		if (!findRes) {
 			name = 'no result'
 		}
 		ctx.body = name
@@ -75,8 +76,8 @@ router
 			useNewUrlParser: true,
 		})
 		// 防止反复提交，确认数据库没有后才提交
-		const findRes = await User.find({ name: form.username })
-		if (findRes.length === 0) {
+		const findRes = await User.findOne({ name: form.username })
+		if (!findRes) {
 			const salt = Math.random()
 			const newUser = new User({
 				name: form.username,
@@ -123,9 +124,9 @@ router
 			useNewUrlParser: true,
 		})
 		// 登录时要确认有账号
-		const findRes = await User.find({ name: form.username })
-		if (findRes.length) {
-			const userInfo = findRes[0]
+		const findRes = await User.findOne({ name: form.username })
+		if (findRes) {
+			const userInfo = findRes
 			const postPW = md5(`${form.username}${userInfo.salt}${form.password}`)
 			// 验证密码
 			if (postPW === userInfo.password) {
@@ -149,13 +150,45 @@ router
 		})
 	})
 	.get('/start', async (ctx) => {
+		// 拦截未登录用户
+		if (!ctx.session.isLogin) {
+			ctx.redirect('/')
+			ctx.status = 302
+		}
 		const result = 'Input To Guess'
 		await ctx.render('number-guesser', {
 			result,
 		})
+
+		const num = Math.floor(Math.random() * 100)
+		console.log(`sever number: ${num}`)
+		await mongoose.connect('mongodb://localhost:27017/task6', {
+			useNewUrlParser: true,
+		})
+		const findRes = await Num.findOne({ userID: ctx.session.userID })
+		console.log(`find result: ${findRes}`)
+		if (findRes) {
+			findRes.number = num
+			const saveRes = await findRes.save()
+			console.log(`save result: ${saveRes}`)
+		} else {
+			const newNum = new Num({
+				userID: ctx.session.userID,
+				number: num,
+			})
+			const saveRes = await newNum.save()
+			console.log(`save result: ${saveRes}`)
+		}
 	})
 	.post('/:number', async (ctx) => {
-		const clientNum = Number(ctx.params.number) // 只会在 post 请求触发
+		// 拦截未登录用户
+		if (!ctx.session.isLogin) {
+			ctx.redirect('/')
+			ctx.status = 302
+		}
+		const findRes = await Num.find({ userID: ctx.session.userID })
+		console.log(findRes)
+		const clientNum = findRes.number
 		console.log(`clientNum: ${clientNum}`)
 
 		const serverNum = Number(ctx.serverNum)
