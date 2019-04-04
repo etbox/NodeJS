@@ -3,6 +3,7 @@ const views = require('koa-views')
 const path = require('path')
 const bodyParser = require('koa-bodyparser')
 const session = require('koa-session')
+const mongoose = require('mongoose')
 const controller = require('./controller')
 
 const app = new Koa()
@@ -11,8 +12,10 @@ app.keys = ['some secret hurr'] // 用于计算 hash 值并放在 cookie 中，�
 
 app
 	.use(async (ctx, next) => {
-		// 服务器收到请求，将其打印出来
-		console.log(`Process ${ctx.request.method} ${ctx.request.url} ...`)
+		// 中间件内做数据库连接，这样就不用每个handler都创建链接了
+		await mongoose.connect('mongodb://localhost:27017/task6', {
+			useNewUrlParser: true,
+		})
 		await next()
 	})
 	.use(
@@ -22,6 +25,11 @@ app
 		}),
 	)
 	.use(bodyParser()) // 处理 post 表单
+	.use(async (ctx, next) => {
+		// 服务器收到请求，将其打印出来
+		console.log(`Process ${ctx.request.method} ${ctx.request.url} ...`)
+		await next()
+	})
 	.use(
 		session(
 			{

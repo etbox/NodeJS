@@ -57,13 +57,12 @@ router
 	})
 	.get('/check-name', async (ctx) => {
 		// ajax 请求检查是否重名
-		let name = ctx.url.split('?')[1]
+		let name = ctx.url.split('?')[1] // koa-qs能解析querystring的，不用自己split。
 		console.log(`check username: ${name}`)
 
-		await mongoose.connect('mongodb://localhost:27017/task6', {
-			useNewUrlParser: true,
+		const findRes = await User.findOne({
+			name,
 		})
-		const findRes = await User.findOne({ name })
 		console.log(`find result: ${findRes}`)
 		// 无结果时 findRes 为 null
 		if (!findRes) {
@@ -73,9 +72,6 @@ router
 	})
 	.post('/register', async (ctx) => {
 		const form = ctx.request.body
-		await mongoose.connect('mongodb://localhost:27017/task6', {
-			useNewUrlParser: true,
-		})
 		const findRes = await User.findOne({ name: form.username })
 		// 防止反复提交，确认数据库没有后才提交
 		if (!findRes) {
@@ -124,9 +120,6 @@ router
 		const btnRight = '/Register'
 		let title = 'Login'
 
-		await mongoose.connect('mongodb://localhost:27017/task6', {
-			useNewUrlParser: true,
-		})
 		const findRes = await User.findOne({ name: form.username })
 		// 登录时要确认有账号
 		if (findRes) {
@@ -162,9 +155,6 @@ router
 
 		const num = Math.floor(Math.random() * 100)
 		console.log(`sever number: ${num}`)
-		await mongoose.connect('mongodb://localhost:27017/task6', {
-			useNewUrlParser: true,
-		})
 		const findRes = await Num.findOne({ userID: ctx.session.userID })
 		console.log(`find result: ${findRes}`)
 		// 若数据库有记录，则更新数据
@@ -194,11 +184,8 @@ router
 			ctx.status = 302
 		}
 
-		await mongoose.connect('mongodb://localhost:27017/task6', {
-			useNewUrlParser: true,
-		})
 		const findRes = await Num.findOne({ userID: ctx.session.userID })
-		const serverNum = Number(findRes.number)
+		const serverNum = findRes.number
 		console.log(`serverNum: ${serverNum}`)
 
 		const clientNum = Number(ctx.params.number) // 只会在 post 请求触发
