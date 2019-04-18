@@ -92,7 +92,7 @@
 										if (event.target.value) {
 											$.ajax({
 												url: 'check-name',
-												data: event.target.value,
+												data: `name=${event.target.value}`,
 											}).done(
 												// TODO: 用 fetch 代替 $.ajax
 												response => {

@@ -57,7 +57,7 @@ router
 	})
 	.get('/check-name', async (ctx) => {
 		// ajax 请求检查是否重名
-		let name = ctx.url.split('?')[1] // koa-qs能解析querystring的，不用自己split。
+		let { name } = ctx.query
 		console.log(`check username: ${name}`)
 
 		const findRes = await User.findOne({

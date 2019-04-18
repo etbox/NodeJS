@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const controller = require('./controller')
 
 const app = new Koa()
+require('koa-qs')(app)
 
 app.keys = ['some secret hurr'] // 用于计算 hash 值并放在 cookie 中，使产生的 signedCookie 防篡改
 
