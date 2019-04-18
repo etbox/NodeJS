@@ -1,6 +1,5 @@
 const program = require('commander')
 const Koa = require('koa')
-// const serve = require('koa-static')
 const views = require('koa-views')
 const path = require('path')
 const controller = require('./controller')
@@ -17,15 +16,19 @@ if (!program.port) {
 }
 
 app
-	.use(async (ctx, next) => { // 服务器收到请求，将其打印出来
+	.use(async (ctx, next) => {
+		// 服务器收到请求，将其打印出来
 		console.log(`Process ${ctx.request.method} ${ctx.request.url} ...`)
 		await next()
 	})
-	// .use(serve(path.join(__dirname, './static'))) // 改用 cdn，不用处理静态资源
-	.use(views(path.join(__dirname, './views'), { // 加载模板引擎
-		extension: 'ejs',
-	}))
-	.use(async (ctx, next) => { // 将 redis 里的数保存在 ctx 中
+	.use(
+		views(path.join(__dirname, './views'), {
+			// 加载模板引擎
+			extension: 'ejs',
+		}),
+	)
+	.use(async (ctx, next) => {
+		// 将 redis 里的数保存在 ctx 中
 		ctx.serverNum = await controller.getNumber(ctx) // 不管用户怎么操作，先取数
 		await next()
 	})

@@ -1,16 +1,15 @@
 {
-  "devDependencies": {
-    "eslint": "^5.15.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.16.0"
-  },
-  "dependencies": {
-    "commander": "^2.19.0",
-    "ejs": "^2.6.1",
-    "koa": "^2.7.0",
-    "koa-router": "^7.4.0",
-    "koa-static": "^5.0.0",
-    "koa-views": "^6.1.5",
-    "redis": "^2.8.0"
-  }
+	"devDependencies": {
+		"eslint": "^5.15.1",
+		"eslint-config-airbnb-base": "^13.1.0",
+		"eslint-plugin-import": "^2.16.0"
+	},
+	"dependencies": {
+		"commander": "^2.19.0",
+		"ejs": "^2.6.1",
+		"koa": "^2.7.0",
+		"koa-router": "^7.4.0",
+		"koa-views": "^6.1.5",
+		"redis": "^2.8.0"
+	}
 }

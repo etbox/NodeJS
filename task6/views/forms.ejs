@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title><%= title %></title>
+		<link
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+		/>
+		<script
+			src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+			integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+			crossorigin="anonymous"
+		></script>
+	</head>
+
+	<body>
+		<div class="container text-center" style="padding-top: 200px">
+			<header
+				class="h1"
+				style="color:rgba(173, 216, 230, 1); padding-bottom: 50px"
+			>
+				<%= title %>
+			</header>
+			<form name="register" method="POST">
+				<div class="form-group">
+					<label for="username">Username</label>
+					<input
+						type="text"
+						class="form-control"
+						id="username"
+						placeholder="Enter Username"
+						name="username"
+						required
+					/>
+					<!-- 用于重名检查 -->
+					<div class="invalid-feedback">
+						Username existed! Please choose another one.
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input
+						type="password"
+						class="form-control"
+						id="password"
+						placeholder="Password"
+						name="password"
+						required
+					/>
+				</div>
+
+				<div class="row" style="padding-top:20px">
+					<div class="col-md-6">
+						<button type="submit" class="btn btn-primary" disabled>
+							<%= btnLeft.substr(1) %>
+						</button>
+					</div>
+					<div class="col-md-6">
+						<a href="<%= btnRight.toLowerCase() %>">
+							<button type="button" class="btn btn-info">
+								<%= btnRight.substr(1) %>
+							</button>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+			integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			crossorigin="anonymous"
+		></script>
+		<script>
+			;(() => {
+				'use strict'
+				window.addEventListener(
+					'load',
+					() => {
+						const url = document.URL.split('localhost:3000')[1]
+						const forms = document.getElementsByTagName('form')
+						Array.prototype.filter.call(forms, form => {
+							// 在 username 失去焦点时对用户名进行重名检查
+							if (url === '/register') {
+								document
+									.getElementById('username')
+									.addEventListener('blur', event => {
+										if (event.target.value) {
+											$.ajax({
+												url: 'check-name',
+												data: `name=${event.target.value}`,
+											}).done(
+												// TODO: 用 fetch 代替 $.ajax
+												response => {
+													;[].forEach.call(
+														document.getElementsByClassName('invalid-feedback'),
+														item => {
+															// 无结果说明改用户名还没被占用
+															item.style.display =
+																response === 'no result' ? 'none' : 'block'
+														},
+													)
+													;[].forEach.call(
+														document.querySelectorAll('button[type=submit]'),
+														item => {
+															item.disabled =
+																response === 'no result' ? false : true
+														},
+													)
+												},
+											)
+										}
+									})
+							} else if (url === '/login') {
+								;[].forEach.call(
+									document.querySelectorAll('button[type=submit]'),
+									item => {
+										// login 页面不需要阻止提交
+										item.disabled = false
+									},
+								)
+							}
+						})
+					},
+					false,
+				)
+			})()
+		</script>
+	</body>
+</html>
